@@ -1,0 +1,528 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Facility Rental Quote Generator</title>
+<style>
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: Arial, sans-serif;
+    background: #f1f4f3;
+    color: #26352f;
+    margin: 0;
+    padding: 24px 12px;
+  }
+
+  main {
+    max-width: 760px;
+    margin: auto;
+    background: white;
+    padding: 28px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px #00000010;
+  }
+
+  h1 { margin-top: 0; font-size: 28px; }
+  h2 { font-size: 19px; margin-top: 28px; }
+
+  .intro, .muted {
+    color: #65736d;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 16px;
+  }
+
+  .full { grid-column: 1 / -1; }
+
+  label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin: 14px 0 6px;
+  }
+
+  input, select, textarea {
+    width: 100%;
+    padding: 11px;
+    font: inherit;
+    border: 1px solid #cbd4ce;
+    border-radius: 6px;
+    background: white;
+  }
+
+  input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+  }
+
+  .check {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: normal;
+    margin: 14px 0;
+  }
+
+  button {
+    padding: 13px 16px;
+    border: 0;
+    border-radius: 7px;
+    background: #285b49;
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .primary { width: 100%; margin-top: 24px; }
+  .secondary { background: #52665c; margin-top: 12px; }
+
+  .notice {
+    padding: 14px;
+    background: #fff3e5;
+    border-radius: 7px;
+    color: #814318;
+    margin-top: 18px;
+    line-height: 1.5;
+  }
+
+  .quote {
+    border: 1px solid #d7dfd9;
+    border-radius: 9px;
+    padding: 24px;
+    margin-top: 26px;
+  }
+
+  .quote-header {
+    border-bottom: 2px solid #285b49;
+    padding-bottom: 14px;
+    margin-bottom: 18px;
+  }
+
+  .quote-header h2 { margin: 0 0 8px; }
+
+  .details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 18px 0;
+  }
+
+  .detail {
+    background: #f4f7f5;
+    border-radius: 6px;
+    padding: 12px;
+    overflow-wrap: anywhere;
+  }
+
+  .detail small {
+    display: block;
+    color: #64736b;
+    margin-bottom: 5px;
+  }
+
+  .line {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid #e2e7e3;
+  }
+
+  .line span:last-child {
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .total {
+    font-size: 24px;
+    font-weight: bold;
+    color: #285b49;
+  }
+
+  .deposit-box {
+    background: #edf5f0;
+    padding: 16px;
+    border-radius: 8px;
+    margin-top: 18px;
+  }
+
+  .deposit-box p { margin: 7px 0; }
+
+  .quote-footer {
+    margin-top: 22px;
+    padding-top: 14px;
+    border-top: 1px solid #d7dfd9;
+  }
+
+  [hidden] { display: none !important; }
+
+  @media (max-width: 520px) {
+    main { padding: 18px; }
+    .grid, .details { grid-template-columns: 1fr; }
+  }
+
+  @media print {
+    body { background: white; padding: 0; color: black; }
+    main { max-width: none; padding: 0; box-shadow: none; }
+    .no-print, #formPanel, #specialNotice { display: none !important; }
+    #quote { display: block !important; border: 0; padding: 0; margin: 0; }
+    .detail { background: white; border: 1px solid #ddd; }
+    .deposit-box { background: white; border: 1px solid #aaa; }
+    .quote { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <div id="formPanel">
+    <h1>Facility Rental Quote Generator</h1>
+    <p class="intro">
+      Prepare a rental estimate, calculate the required deposit,
+      and print a customer-ready quote.
+    </p>
+
+    <h2>1. Renter Information</h2>
+    <div class="grid">
+      <div>
+        <label for="renter">Renter's Name *</label>
+        <input id="renter" required placeholder="Full name">
+      </div>
+      <div>
+        <label for="organization">Organization</label>
+        <input id="organization" placeholder="Church or organization">
+      </div>
+      <div>
+        <label for="email">Email Address</label>
+        <input id="email" type="email" placeholder="name@example.com">
+      </div>
+      <div>
+        <label for="phone">Phone Number</label>
+        <input id="phone" type="tel" placeholder="Phone number">
+      </div>
+    </div>
+
+    <h2>2. Event Information</h2>
+    <div class="grid">
+      <div>
+        <label for="eventDate">Event Date *</label>
+        <input id="eventDate" type="date" required>
+      </div>
+      <div>
+        <label for="eventType">Event Type *</label>
+        <select id="eventType">
+          <option value="standard">Standard event</option>
+          <option value="wedding">Wedding</option>
+          <option value="funeral">Funeral</option>
+        </select>
+      </div>
+      <div class="full">
+        <label for="eventName">Event Name / Description</label>
+        <input id="eventName" placeholder="e.g. Community meeting">
+      </div>
+    </div>
+
+    <div id="standardFields">
+      <h2>3. Rental Selection</h2>
+      <label for="customer">Pricing Category</label>
+      <select id="customer">
+        <option value="nonprofit">Nonprofit</option>
+        <option value="profit">For-profit</option>
+      </select>
+
+      <label for="space">Primary Space</label>
+      <select id="space">
+        <option value="sanctuary">Sanctuary</option>
+        <option value="lawrence">Lawrence Room</option>
+        <option value="lower">Lower Sproat</option>
+      </select>
+
+      <label for="hours">Rental Duration (hours)</label>
+      <input id="hours" type="number" min="0.5" step="0.5" value="2">
+
+      <div id="upperGroup" hidden>
+        <label class="check">
+          <input type="checkbox" id="upper">
+          Add Upper Sproat / Kitchen
+        </label>
+        <p class="muted">
+          Available only when Lower Sproat is the primary space.
+          Charged at the same hourly duration.
+        </p>
+      </div>
+
+      <h2>4. Additional Equipment</h2>
+      <label class="check">
+        <input type="checkbox" id="av">
+        AV equipment — $50 flat fee
+      </label>
+      <label class="check">
+        <input type="checkbox" id="piano">
+        Piano usage — $60 flat fee
+      </label>
+    </div>
+
+    <h2>5. Additional Notes</h2>
+    <label for="notes">Notes for the renter</label>
+    <textarea id="notes" rows="3"
+      placeholder="Optional details, conditions, or next steps"></textarea>
+
+    <p class="muted">
+      * Required fields. Weddings and funerals require separate pricing
+      confirmation and cannot be quoted using the standard rates.
+    </p>
+
+    <button class="primary" id="calculate" type="button">
+      Generate Rental Quote
+    </button>
+
+    <div id="specialNotice" class="notice" hidden>
+      <strong>Special pricing required.</strong>
+      Standard rental rates do not apply to weddings or funerals.
+      Please confirm the approved rate with the facility administrator.
+      No rental total or deposit has been calculated.
+    </div>
+  </div>
+
+  <section id="quote" class="quote" hidden aria-live="polite">
+    <div class="quote-header">
+      <h2>Facility Rental Estimate</h2>
+      <p class="muted">Prepared for the prospective renter</p>
+    </div>
+
+    <div class="details">
+      <div class="detail">
+        <small>Renter</small>
+        <strong id="qRenter"></strong>
+        <div id="qOrganization"></div>
+      </div>
+      <div class="detail">
+        <small>Event Date</small>
+        <strong id="qDate"></strong>
+        <div id="qEvent"></div>
+      </div>
+      <div class="detail">
+        <small>Email</small>
+        <span id="qEmail"></span>
+      </div>
+      <div class="detail">
+        <small>Phone</small>
+        <span id="qPhone"></span>
+      </div>
+    </div>
+
+    <h2>Itemized Pricing</h2>
+    <div id="qLines"></div>
+
+    <div class="line">
+      <strong>Total Rental Fee</strong>
+      <strong class="total" id="qTotal"></strong>
+    </div>
+
+    <div class="deposit-box">
+      <p>Required Deposit (50%)</p>
+      <div class="total" id="qDeposit"></div>
+      <p>Remaining Balance: <strong id="qBalance"></strong></p>
+    </div>
+
+    <div id="qNotesSection" hidden>
+      <h2>Additional Notes</h2>
+      <p id="qNotes"></p>
+    </div>
+
+    <div class="quote-footer">
+      <p><strong>Important Information</strong></p>
+      <p class="muted">
+        This quote is an estimate and is subject to facility approval
+        and confirmation of availability. The 50% deposit is calculated
+        on the total listed rental fee. Weddings and funerals are subject
+        to separate pricing.
+      </p>
+      <p class="muted">
+        Please contact the facility administrator to confirm the rental
+        and arrange payment of the deposit.
+      </p>
+    </div>
+
+    <div class="no-print">
+      <button id="print" type="button">Print / Save as PDF</button>
+      <button id="edit" type="button" class="secondary">
+        Edit Rental Details
+      </button>
+    </div>
+  </section>
+</main>
+
+<script>
+  const $ = id => document.getElementById(id);
+
+  const money = value => value.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD"
+  });
+
+  function updateForm() {
+    const special = $("eventType").value !== "standard";
+    $("standardFields").hidden = special;
+    $("specialNotice").hidden = true;
+    $("quote").hidden = true;
+
+    const isLower = $("space").value === "lower";
+    $("upperGroup").hidden = !isLower;
+    if (!isLower) $("upper").checked = false;
+  }
+
+  $("eventType").addEventListener("change", updateForm);
+  $("space").addEventListener("change", updateForm);
+
+  // Prevent an old quote from being mistaken for a new one.
+  $("formPanel").addEventListener("input", () => {
+    $("quote").hidden = true;
+    $("specialNotice").hidden = true;
+  });
+
+  $("formPanel").addEventListener("change", () => {
+    $("quote").hidden = true;
+    $("specialNotice").hidden = true;
+  });
+
+  function addLine(name, amount) {
+    const row = document.createElement("div");
+    row.className = "line";
+
+    const label = document.createElement("span");
+    label.textContent = name;
+
+    const price = document.createElement("span");
+    price.textContent = money(amount);
+
+    row.append(label, price);
+    $("qLines").append(row);
+  }
+
+  $("calculate").addEventListener("click", () => {
+    const renter = $("renter").value.trim();
+    const date = $("eventDate").value;
+    const hours = Number($("hours").value);
+    const special = $("eventType").value !== "standard";
+
+    $("quote").hidden = true;
+    $("specialNotice").hidden = true;
+
+    if (!renter) {
+      alert("Please enter the renter's name.");
+      $("renter").focus();
+      return;
+    }
+
+    if (!date) {
+      alert("Please select the event date.");
+      $("eventDate").focus();
+      return;
+    }
+
+    if (special) {
+      $("specialNotice").hidden = false;
+      $("specialNotice").scrollIntoView({ behavior: "smooth" });
+      return;
+    }
+
+    if (!Number.isFinite(hours) || hours <= 0) {
+      alert("Please enter a rental duration greater than zero.");
+      $("hours").focus();
+      return;
+    }
+
+    const nonprofit = $("customer").value === "nonprofit";
+    const space = $("space").value;
+
+    const rates = {
+      sanctuary: nonprofit ? 255 : 300,
+      lawrence: nonprofit ? 90 : 105,
+      lower: nonprofit ? 150 : 170
+    };
+
+    const names = {
+      sanctuary: "Sanctuary",
+      lawrence: "Lawrence Room",
+      lower: "Lower Sproat"
+    };
+
+    let total = 0;
+    $("qLines").replaceChildren();
+
+    const baseCost = rates[space] * hours;
+    addLine(`${names[space]} — ${hours} hour(s)`, baseCost);
+    total += baseCost;
+
+    if (space === "lower" && $("upper").checked) {
+      const upperRate = nonprofit ? 100 : 130;
+      const upperCost = upperRate * hours;
+      addLine(`Upper Sproat / Kitchen — ${hours} hour(s)`,
+        upperCost);
+      total += upperCost;
+    }
+
+    if ($("av").checked) {
+      addLine("AV equipment — flat fee", 50);
+      total += 50;
+    }
+
+    if ($("piano").checked) {
+      addLine("Piano usage — flat fee", 60);
+      total += 60;
+    }
+
+    // Round the deposit to the nearest cent.
+    const deposit = Math.round(total * 50) / 100;
+    const balance = total - deposit;
+
+    $("qRenter").textContent = renter;
+    $("qOrganization").textContent =
+      $("organization").value.trim();
+    $("qEmail").textContent = $("email").value.trim() || "Not provided";
+    $("qPhone").textContent = $("phone").value.trim() || "Not provided";
+
+    const dateParts = date.split("-").map(Number);
+    const eventDate = new Date(
+      dateParts[0], dateParts[1] - 1, dateParts[2]
+    );
+    $("qDate").textContent = eventDate.toLocaleDateString(
+      "en-US", { year: "numeric", month: "long", day: "numeric" }
+    );
+
+    $("qEvent").textContent =
+      $("eventName").value.trim() || "Standard event";
+
+    $("qTotal").textContent = money(total);
+    $("qDeposit").textContent = money(deposit);
+    $("qBalance").textContent = money(balance);
+
+    const notes = $("notes").value.trim();
+    $("qNotes").textContent = notes;
+    $("qNotesSection").hidden = !notes;
+
+    $("quote").hidden = false;
+    $("quote").scrollIntoView({ behavior: "smooth" });
+  });
+
+  $("print").addEventListener("click", () => window.print());
+
+  $("edit").addEventListener("click", () => {
+    $("quote").hidden = true;
+    $("formPanel").scrollIntoView({ behavior: "smooth" });
+  });
+
+  updateForm();
+</script>
+</body>
+</html>
